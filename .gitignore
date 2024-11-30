@@ -13,3 +13,4 @@ __pycache__/
 
 # Otros archivos específicos de la aplicación
 *.log
+.vercel

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class VehicleBase(BaseModel):
@@ -16,5 +16,5 @@ class VehicleCreate(VehicleBase):
 class Vehicle(VehicleBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    # Cambio importante para Pydantic v2
+    model_config = ConfigDict(from_attributes=True)

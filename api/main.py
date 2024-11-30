@@ -8,12 +8,20 @@ from database import (
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
+from fastapi.middleware.cors import CORSMiddleware
 
 # Crear las tablas en la base de datos
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permitir solicitudes desde cualquier origen
+    allow_credentials=True,
+    allow_methods=["*"],  # Permitir cualquier método (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Permitir cualquier encabezado
+)
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -25,12 +33,12 @@ async def get_form(request: Request):
 
 
 @app.get("/listaVehiculos", response_class=HTMLResponse)
-async def get_form(request: Request):
+async def get_lista_vehiculos(request: Request):
     return templates.TemplateResponse("vehiculos.html", {"request": request})
 
 
 @app.get("/updateVehiculo", response_class=HTMLResponse)
-async def get_form(request: Request):
+async def get_update_vehiculo(request: Request):
     return templates.TemplateResponse("updateVehiculo.html", {"request": request})
 
 
@@ -46,7 +54,7 @@ def get_db():
 # Crear un nuevo vehículo
 @app.post("/vehicles/", response_model=schemas.Vehicle)
 def create_vehicle(vehicle: schemas.VehicleCreate, db: Session = Depends(get_db)):
-    db_vehicle = models.Vehiculo(**vehicle.dict())
+    db_vehicle = models.Vehiculo(**vehicle.model_dump())
     db.add(db_vehicle)
     db.commit()
     db.refresh(db_vehicle)
@@ -80,8 +88,12 @@ def update_vehicle(
     )
     if not db_vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
-    for key, value in vehicle.dict().items():
+
+    # Cambio a model_dump()
+    vehicle_data = vehicle.model_dump()
+    for key, value in vehicle_data.items():
         setattr(db_vehicle, key, value)
+
     db.commit()
     db.refresh(db_vehicle)
     return db_vehicle

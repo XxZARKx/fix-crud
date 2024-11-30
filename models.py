@@ -3,7 +3,7 @@ from database import Base
 
 
 class Vehiculo(Base):
-    __tablename__ = "vehiculo"  # Nombre de la tabla en tu base de datos
+    __tablename__ = "vehiculo"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     marca = Column(String(80), nullable=False)

@@ -1,4 +1,13 @@
-// Función para obtener el ID de la URL
+export function getApiUrl() {
+	// Si el frontend y el backend están en el mismo dominio, usa el dominio actual
+	if (window.location.hostname === "localhost") {
+		// Para desarrollo local
+		return "http://127.0.0.1:8000";
+	} else {
+		// Para producción, usa el dominio de la página actual
+		return `${window.location.origin}`; // Asumimos que la API está en /api
+	}
+}
 function getVehicleIdFromURL() {
 	const urlParams = new URLSearchParams(window.location.search);
 	return urlParams.get("id");
@@ -6,7 +15,9 @@ function getVehicleIdFromURL() {
 
 // Función para obtener los datos del vehículo
 async function fetchVehicle(id) {
-	const response = await fetch(`http://127.0.0.1:8000/vehicles/${id}`);
+	const apiUrl = getApiUrl(); // Obtener la URL de la API
+
+	const response = await fetch(`${apiUrl}/vehicles/${id}`);
 	const vehicle = await response.json();
 
 	// Rellenar el formulario con los datos del vehículo
@@ -31,7 +42,9 @@ async function updateVehicle(event) {
 		estado: document.getElementById("estado").value,
 	};
 
-	const response = await fetch(`http://127.0.0.1:8000/vehicles/${id}`, {
+	const apiUrl = getApiUrl(); // Obtener la URL de la API
+
+	const response = await fetch(`${apiUrl}/vehicles/${id}`, {
 		method: "PUT",
 		headers: {
 			"Content-Type": "application/json",

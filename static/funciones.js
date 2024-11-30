@@ -1,6 +1,18 @@
+export function getApiUrl() {
+	// Si el frontend y el backend están en el mismo dominio, usa el dominio actual
+	if (window.location.hostname === "localhost") {
+		// Para desarrollo local
+		return "http://127.0.0.1:8000";
+	} else {
+		// Para producción, usa el dominio de la página actual
+		return `${window.location.origin}`; // Asumimos que la API está en /api
+	}
+}
+
 // Función para obtener todos los vehículos desde el servidor
 async function fetchVehicles() {
-	const response = await fetch("http://127.0.0.1:8000/vehicles/");
+	const apiUrl = getApiUrl(); // Obtener la URL de la API
+	const response = await fetch(`${apiUrl}/vehicles/`);
 	const vehicles = await response.json();
 	const tableBody = document.querySelector("#vehiclesTable tbody");
 
@@ -12,17 +24,17 @@ async function fetchVehicles() {
 		const row = document.createElement("tr");
 
 		row.innerHTML = `
-        <td>${vehicle.id}</td>
-        <td>${vehicle.marca}</td>
-        <td>${vehicle.modelo}</td>
-        <td>${vehicle.placa}</td>
-        <td>${vehicle.matricula}</td>
-        <td>${vehicle.estado}</td>
-        <td>
-          <button onclick="editVehicle(${vehicle.id})">Actualizar</button>
-          <button onclick="deleteVehicle(${vehicle.id})">Eliminar</button>
-        </td>
-      `;
+		<td>${vehicle.id}</td>
+		<td>${vehicle.marca}</td>
+		<td>${vehicle.modelo}</td>
+		<td>${vehicle.placa}</td>
+		<td>${vehicle.matricula}</td>
+		<td>${vehicle.estado}</td>
+		<td>
+		  <button onclick="editVehicle(${vehicle.id})">Actualizar</button>
+		  <button onclick="deleteVehicle(${vehicle.id})">Eliminar</button>
+		</td>
+	  `;
 
 		tableBody.appendChild(row);
 	});
@@ -30,17 +42,18 @@ async function fetchVehicles() {
 
 // Función para editar un vehículo
 function editVehicle(id) {
-	// Redirigir al formulario de actualización (puedes crear una ruta para eso)
-	window.location.href = `/updateVehiculo?id=${id}`;
+	const apiUrl = getApiUrl(); // Obtener la URL de la API
+	window.location.href = `${apiUrl}/updateVehiculo?id=${id}`; // Redirigir al formulario de actualización
 }
 
 // Función para eliminar un vehículo
 async function deleteVehicle(id) {
+	const apiUrl = getApiUrl(); // Obtener la URL de la API
 	const confirmation = confirm(
 		"¿Estás seguro de que deseas eliminar este vehículo?"
 	);
 	if (confirmation) {
-		const response = await fetch(`http://127.0.0.1:8000/vehicles/${id}`, {
+		const response = await fetch(`${apiUrl}/vehicles/${id}`, {
 			method: "DELETE",
 		});
 
@@ -52,6 +65,10 @@ async function deleteVehicle(id) {
 		}
 	}
 }
+
+// Hacer que las funciones sean globales
+window.editVehicle = editVehicle;
+window.deleteVehicle = deleteVehicle;
 
 // Llamar a la función para obtener los vehículos al cargar la página
 fetchVehicles();

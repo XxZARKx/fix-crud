@@ -1,3 +1,13 @@
+export function getApiUrl() {
+	// Si el frontend y el backend están en el mismo dominio, usa el dominio actual
+	if (window.location.hostname === "localhost") {
+		// Para desarrollo local
+		return "http://127.0.0.1:8000";
+	} else {
+		// Para producción, usa el dominio de la página actual
+		return `${window.location.origin}`; // Asumimos que la API está en /api
+	}
+}
 document
 	.getElementById("vehicleForm")
 	.addEventListener("submit", async function (e) {
@@ -7,9 +17,12 @@ document
 		const formData = new FormData(e.target);
 		const vehicleData = Object.fromEntries(formData.entries());
 
+		// Obtener la URL de la API (se adapta según el entorno)
+		const apiUrl = getApiUrl();
+
 		// Enviar la solicitud POST al servidor
 		try {
-			const response = await fetch("/vehicles/", {
+			const response = await fetch(`${apiUrl}/vehicles/`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
