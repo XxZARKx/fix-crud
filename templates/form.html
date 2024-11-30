@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>CRUD VEHICULO</title>
+		<link rel="stylesheet" href="/static/styles.css" />
+	</head>
+	<body>
+		<header>
+			<nav>
+				<ul>
+					<li><a href="/">Registrar Vehículo</a></li>
+					<li><a href="/listaVehiculos">Lista de Vehículos</a></li>
+				</ul>
+			</nav>
+		</header>
+		<h1>Registrar Vehículo</h1>
+		<form id="vehicleForm">
+			<label for="marca">Marca:</label>
+			<input type="text" id="marca" name="marca" required /><br />
+
+			<label for="modelo">Modelo:</label>
+			<input type="text" id="modelo" name="modelo" required /><br />
+
+			<label for="placa">Placa:</label>
+			<input type="text" id="placa" name="placa" required /><br />
+
+			<label for="matricula">Matrícula:</label>
+			<input type="text" id="matricula" name="matricula" required /><br />
+
+			<label for="estado">Estado:</label>
+			<input type="text" id="estado" name="estado" required /><br />
+
+			<button type="submit">Registrar</button>
+		</form>
+
+		<script src="/static/script.js"></script>
+	</body>
+</html>
