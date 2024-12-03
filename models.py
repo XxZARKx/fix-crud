@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from database import Base
 
-
 class Vehiculo(Base):
     __tablename__ = "vehiculo"
 
