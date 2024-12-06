@@ -31,7 +31,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Redirección inicial a la página de registro
 @app.get("/", include_in_schema=False)
 async def home():
-    return RedirectResponse("/register")
+    return RedirectResponse("/enlaces")
+
+@app.get("/enlaces", response_class=HTMLResponse)
+async def get_form(request: Request):
+    return templates.TemplateResponse("listaEnlaces.html", {"request": request})
 
 @app.get("/vehiculos/register", response_class=HTMLResponse)
 async def get_form(request: Request):

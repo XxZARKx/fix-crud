@@ -17,6 +17,8 @@ async function fetchUsers() {
 
     tableBody.innerHTML = "";
 
+    users.sort((a, b) => a.id - b.id);
+
     users.forEach((user) => {
       const row = document.createElement("tr");
       row.innerHTML = `

@@ -176,3 +176,19 @@ tbody td:last-child button:first-child:hover {
   cursor: pointer;
   color: gray;
 }
+
+/* lista enlaces */
+.listaEnlaces {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.listaEnlaces li a {
+  color: red;
+  font-size: 1.5rem;
+}
+
+.listaEnlaces li a:hover {
+  color: #256dbe;
+}
