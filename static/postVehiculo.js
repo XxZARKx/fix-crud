@@ -22,7 +22,7 @@ document
 
     // Enviar la solicitud POST al servidor
     try {
-      const response = await fetch(`${apiUrl}/vehicles/`, {
+      const response = await fetch(`${apiUrl}/vehicles`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

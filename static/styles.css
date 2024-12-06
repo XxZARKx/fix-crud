@@ -23,6 +23,11 @@ header {
   margin: 0 0 100px;
 }
 
+nav {
+  background-color: inherit;
+  box-shadow: none;
+}
+
 nav ul {
   list-style: none;
   padding: 0;
@@ -158,4 +163,16 @@ tbody td:last-child button:hover {
 
 tbody td:last-child button:first-child:hover {
   background-color: #4a90e2;
+}
+
+/* password */
+.passwordContainer {
+  position: relative;
+}
+.toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  cursor: pointer;
+  color: gray;
 }

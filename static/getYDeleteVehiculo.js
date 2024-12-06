@@ -44,7 +44,7 @@ async function fetchVehicles() {
 // Función para editar un vehículo
 function editVehicle(id) {
   const apiUrl = getApiUrl(); // Obtener la URL de la API
-  window.location.href = `${apiUrl}/updateVehiculo?id=${id}`;
+  window.location.href = `${apiUrl}/vehiculos/update/?id=${id}`;
   Swal.fire({
     title: "Redirigiendo...",
     text: "Serás llevado al formulario de actualización.",

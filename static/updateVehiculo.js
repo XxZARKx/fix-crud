@@ -80,7 +80,7 @@ async function updateVehicle(event) {
       icon: "success",
       confirmButtonText: "Aceptar",
     }).then(() => {
-      window.location.href = "/listaVehiculos";
+      window.location.href = "/vehiculos/list";
     });
   } catch (error) {
     Swal.fire({
