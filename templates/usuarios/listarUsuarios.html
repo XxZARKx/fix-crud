@@ -18,18 +18,16 @@
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	</head>
 	<body>
-		<header>
+		<header id="headerRegister">
 			<nav>
 				<ul>
-					<li><a href="/empleados/register">Registrar Empleado</a></li>
-					<li><a href="/empleados/list">Lista de Empleados</a></li>
 					<li><a href="/enlaces">CRUD disponibles</a></li>
 				</ul>
 			</nav>
 		</header>
 		<main>
-			<h1>Empleados Registrados</h1>
-			<table id="employeesTable">
+			<h1>Registrados</h1>
+			<table id="usersTable">
 				<thead>
 					<tr>
 						<th>ID</th>
@@ -43,6 +41,7 @@
 			</table>
 		</main>
 
-		<script type="module" src="../static/getYDeleteEmpleado.js"></script>
+		<script type="module" src="../static/apiUrl.js"></script>
+		<script type="module" src="../static/main.js"></script>
 	</body>
 </html>

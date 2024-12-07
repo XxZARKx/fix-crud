@@ -18,18 +18,16 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 	</head>
 	<body>
-		<header>
+		<header id="headerRegister">
 			<nav>
 				<ul>
-					<li><a href="/empleados/register">Registrar Empleado</a></li>
-					<li><a href="/empleados/list">Lista de Empleados</a></li>
 					<li><a href="/enlaces">CRUD disponibles</a></li>
 				</ul>
 			</nav>
 		</header>
-		<h1>Actualizar Empleado</h1>
-		<form id="updateEmployeeForm">
-			<input type="hidden" id="employeeId" />
+		<h1>Actualizar Usuario</h1>
+		<form id="updateUserForm">
+			<input type="hidden" id="userId" />
 
 			<label for="nombre">Nombres y Apellidos:</label>
 			<input type="text" id="nombre" name="nombre" required /><br />
@@ -45,8 +43,10 @@
 
 			<button type="submit">Actualizar</button>
 		</form>
+		<div id="spinner" style="width: 100px; height: 100px"></div>
 
-		<script type="module" src="../static/updateEmpleado.js"></script>
+		<script type="module" src="../static/getApiUrl.js"></script>
+		<script type="module" src="../static/updateUsuario.js"></script>
 		<script src="/static/tooglePasswordVisibility.js"></script>
 	</body>
 </html>

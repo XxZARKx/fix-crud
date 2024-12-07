@@ -50,54 +50,50 @@ async def get_form(request: Request):
 
 @app.get("/vehiculos/register", response_class=HTMLResponse)
 async def get_form(request: Request):
-    return templates.TemplateResponse("registrarVehiculo.html", {"request": request})
+    return templates.TemplateResponse("/vehiculos/registrarVehiculo.html", {"request": request})
 
 
 @app.get("/vehiculos/list", response_class=HTMLResponse)
 async def get_lista_vehiculos(request: Request):
-    return templates.TemplateResponse("listarVehiculos.html", {"request": request})
+    return templates.TemplateResponse("/vehiculos/listarVehiculos.html", {"request": request})
 
 
 @app.get("/vehiculos/update", response_class=HTMLResponse)
 async def get_update_vehiculo(request: Request):
-    return templates.TemplateResponse("updateVehiculo.html", {"request": request})
+    return templates.TemplateResponse("/vehiculos/updateVehiculo.html", {"request": request})
 
 
-""" usuarios """
+""" clientes """
 
 
-@app.get("/usuarios/register", response_class=HTMLResponse)
+@app.get("/clientes/register", response_class=HTMLResponse)
 async def get_register_usuario(request: Request):
-    return templates.TemplateResponse("registrarUsuario.html", {"request": request})
+    return templates.TemplateResponse("usuarios/registrarUsuario.html", {"request": request})
 
 
-@app.get("/usuarios/list", response_class=HTMLResponse)
+@app.get("/clientes/list", response_class=HTMLResponse)
 async def get_listar_usuarios(request: Request):
-    return templates.TemplateResponse("listarUsuarios.html", {"request": request})
+    return templates.TemplateResponse("usuarios/listarUsuarios.html", {"request": request})
 
 
 @app.get("/usuarios/update", response_class=HTMLResponse)
 async def get_update_usuario(request: Request):
-    return templates.TemplateResponse("updateUsuario.html", {"request": request})
+    return templates.TemplateResponse("usuarios/updateUsuario.html", {"request": request})
 
 
 """ empleados """
 
 
-# Crear las rutas para empleados en main.py
+# # Crear las rutas para empleados en main.py
 @app.get("/empleados/register", response_class=HTMLResponse)
 async def get_register_empleado(request: Request):
-    return templates.TemplateResponse("registrarEmpleado.html", {"request": request})
+    return templates.TemplateResponse("usuarios/registrarUsuario.html", {"request": request})
 
 
 @app.get("/empleados/list", response_class=HTMLResponse)
 async def get_listar_empleados(request: Request):
-    return templates.TemplateResponse("listarEmpleado.html", {"request": request})
+    return templates.TemplateResponse("usuarios/listarUsuarios.html", {"request": request})
 
-
-@app.get("/empleados/update", response_class=HTMLResponse)
-async def get_update_empleado(request: Request):
-    return templates.TemplateResponse("updateEmpleado.html", {"request": request})
 
 
 # Crear un nuevo vehículo
@@ -175,7 +171,7 @@ def create_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)
 
 
 # Obtener todos los usuarios con tipo = 2
-@app.get("/usuarios/", response_model=list[schemas.Usuario])
+@app.get("/clientes/", response_model=list[schemas.Usuario])
 def read_usuarios(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     """
     Obtiene una lista de usuarios con tipo = 2, con paginación (skip, limit).
@@ -183,6 +179,19 @@ def read_usuarios(skip: int = 0, limit: int = 10, db: Session = Depends(get_db))
     return (
         db.query(models.Usuario)
         .filter(models.Usuario.tipo == 2)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+@app.get("/empleados/", response_model=list[schemas.Usuario])
+def read_usuarios(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    """
+    Obtiene una lista de usuarios con tipo = 2, con paginación (skip, limit).
+    """
+    return (
+        db.query(models.Usuario)
+        .filter(models.Usuario.tipo == 1)
         .offset(skip)
         .limit(limit)
         .all()
@@ -231,72 +240,3 @@ def delete_usuario(usuario_id: int, db: Session = Depends(get_db)):
     db.delete(db_usuario)
     db.commit()
     return {"message": "Usuario eliminado exitosamente"}
-
-
-# Crear un nuevo empleado
-@app.post("/empleados/", response_model=schemas.Usuario)
-def create_empleado(empleado: schemas.UsuarioCreate, db: Session = Depends(get_db)):
-    db_empleado = models.Usuario(**empleado.model_dump())
-    db.add(db_empleado)
-    db.commit()
-    db.refresh(db_empleado)
-    return db_empleado
-
-
-# Obtener todos los empleados
-@app.get("/empleados/", response_model=list[schemas.Usuario])
-def read_empleados(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    """
-    Obtiene una lista de empleados con tipo = 1, con paginación (skip, limit).
-    """
-    return (
-        db.query(models.Usuario)
-        .filter(models.Usuario.tipo == 1)
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
-
-
-# Obtener un empleado por ID
-@app.get("/empleados/{empleado_id}", response_model=schemas.Usuario)
-def read_empleado(empleado_id: int, db: Session = Depends(get_db)):
-    db_empleado = (
-        db.query(models.Usuario).filter(models.Usuario.id == empleado_id).first()
-    )
-    if not db_empleado:
-        raise HTTPException(status_code=404, detail="Empleado no encontrado")
-    return db_empleado
-
-
-# Actualizar un empleado
-@app.put("/empleados/{empleado_id}", response_model=schemas.Usuario)
-def update_empleado(
-    empleado_id: int, empleado: schemas.UsuarioUpdate, db: Session = Depends(get_db)
-):
-    db_empleado = (
-        db.query(models.Usuario).filter(models.Usuario.id == empleado_id).first()
-    )
-    if not db_empleado:
-        raise HTTPException(status_code=404, detail="Empleado no encontrado")
-
-    # Actualizar solo los campos proporcionados
-    for key, value in empleado.model_dump(exclude_unset=True).items():
-        setattr(db_empleado, key, value)
-
-    db.commit()
-    db.refresh(db_empleado)
-    return db_empleado
-
-
-# Eliminar un empleado
-@app.delete("/empleados/{empleado_id}")
-def delete_empleado(empleado_id: int, db: Session = Depends(get_db)):
-    db_empleado = (
-        db.query(models.Usuario).filter(models.Usuario.id == empleado_id).first()
-    )
-    if not db_empleado:
-        raise HTTPException(status_code=404, detail="Empleado no encontrado")
-    db.delete(db_empleado)
-    db.commit()
-    return {"message": "Empleado eliminado exitosamente"}

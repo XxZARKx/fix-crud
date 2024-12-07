@@ -1,56 +1,141 @@
-export function getApiUrl() {
-  // Si el frontend y el backend están en el mismo dominio, usa el dominio actual
-  if (window.location.hostname === "localhost") {
-    // Para desarrollo local
-    return "http://127.0.0.1:8000";
-  } else {
-    // Para producción, usa el dominio de la página actual
-    return `${window.location.origin}`; // Asumimos que la API está en /api
-  }
+import { getApiUrl } from "./getApiUrl.js";
+
+const path = window.location.pathname;
+if (path.includes(`/empleados`)) {
+	let navList = document.querySelector("#headerRegister nav ul");
+	const listEmpleados = document.createElement("li");
+	const registerEmpleados = document.createElement("li");
+	listEmpleados.innerHTML = `<a href="/empleados/list">Lista de Empleados</a>`;
+	registerEmpleados.innerHTML = `<a href="/empleados/register">Registrar Empleado</a>`;
+	navList.appendChild(listEmpleados);
+	navList.appendChild(registerEmpleados);
+} else if (path.includes(`/clientes`)) {
+	let navList = document.querySelector("#headerRegister nav ul");
+	const listClientes = document.createElement("li");
+	const registerClientes = document.createElement("li");
+	listClientes.innerHTML = `<a href="/clientes/list">Lista de Clientes</a>`;
+	registerClientes.innerHTML = `<a href="/clientes/register">Registrar Clientes</a>`;
+	navList.appendChild(listClientes);
+	navList.appendChild(registerClientes);
 }
 
 function getUserIdFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("id");
+	const params = new URLSearchParams(window.location.search);
+	return params.get("id");
 }
 
 async function fetchUser(id) {
-  const apiUrl = getApiUrl();
-  const response = await fetch(`${apiUrl}/usuarios/${id}`);
-  const user = await response.json();
+	const apiUrl = getApiUrl();
 
-  document.getElementById("userId").value = user.id;
-  document.getElementById("nombre").value = user.nombre;
-  document.getElementById("correo").value = user.correo;
-  document.getElementById("contraseña").value = user.contraseña;
+	// Muestra un popup de "Cargando..."
+	Swal.fire({
+		title: "Cargando...",
+		text: "Obteniendo información del usuario",
+		icon: "info",
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+	});
+
+	try {
+		const response = await fetch(`${apiUrl}/usuarios/${id}`);
+
+		if (!response.ok) {
+			console.error("Error al obtener los datos:", response.status);
+			Swal.close();
+			return;
+		}
+
+		const user = await response.json();
+		console.log("Datos recibidos del servidor:", user);
+
+		if (user) {
+			document.getElementById("userId").value = user.id || "";
+			document.getElementById("nombre").value = user.nombre || "";
+			document.getElementById("correo").value = user.correo || "";
+			document.getElementById("contraseña").value = user.contraseña || "";
+
+			Swal.fire({
+				title: "Éxito",
+				text: "Datos cargados correctamente",
+				icon: "success",
+			});
+		} else {
+			console.error("No se recibieron datos del servidor.");
+			Swal.fire({
+				title: "Error",
+				text: "No se recibieron datos del servidor",
+				icon: "error",
+			});
+		}
+	} catch (error) {
+		console.error("Error al realizar la solicitud", error);
+		Swal.fire({
+			title: "Error",
+			text: "No se pudo obtener información",
+			icon: "error",
+		});
+	} finally {
+		Swal.close();
+	}
 }
 
 async function updateUser(event) {
-  event.preventDefault();
+	event.preventDefault();
+	const id = document.getElementById("userId").value;
+	const userData = {
+		nombre: document.getElementById("nombre").value,
+		correo: document.getElementById("correo").value,
+		contraseña: document.getElementById("contraseña").value || undefined,
+	};
 
-  const id = document.getElementById("userId").value;
-  const userData = {
-    nombre: document.getElementById("nombre").value,
-    correo: document.getElementById("correo").value,
-    contraseña: document.getElementById("contraseña").value || undefined,
-  };
+	const apiUrl = getApiUrl();
 
-  const apiUrl = getApiUrl();
-  const response = await fetch(`${apiUrl}/usuarios/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(userData),
-  });
+	// Realiza el envío con el popup de "Procesando..."
+	Swal.fire({
+		title: "Actualizando...",
+		text: "Por favor, espere",
+		icon: "info",
+		allowOutsideClick: false,
+		allowEscapeKey: false,
+	});
 
-  if (response.ok) {
-    Swal.fire("Éxito", "Usuario actualizado correctamente", "success");
-    window.location.href = "/usuarios/list";
-  } else {
-    Swal.fire("Error", "No se pudo actualizar el usuario", "error");
-  }
+	try {
+		const response = await fetch(`${apiUrl}/usuarios/${id}`, {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(userData),
+		});
+
+		if (response.ok) {
+			Swal.fire({
+				title: "Éxito",
+				text: "Usuario actualizado correctamente",
+				icon: "success",
+			}).then(() => {
+				window.history.back();
+			});
+		} else {
+			Swal.fire({
+				title: "Error",
+				text: "No se pudo actualizar el usuario",
+				icon: "error",
+			});
+		}
+	} catch (error) {
+		console.error("Error en la solicitud", error);
+		Swal.fire({
+			title: "Error",
+			text: "Algo salió mal",
+			icon: "error",
+		});
+	} finally {
+		Swal.close();
+	}
 }
 
 document
-  .getElementById("updateUserForm")
-  .addEventListener("submit", updateUser);
+	.getElementById("updateUserForm")
+	.addEventListener("submit", updateUser);
+
+// Inicia la carga de datos
 fetchUser(getUserIdFromURL());
