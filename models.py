@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from database import Base
 from sqlalchemy.orm import relationship
 
+
 class Vehiculo(Base):
     __tablename__ = "vehiculo"
 
@@ -22,6 +23,7 @@ class RolUsuario(Base):
     # Relación con la tabla 'usuario'
     usuarios = relationship("Usuario", back_populates="tipo_rol")
 
+
 class Usuario(Base):
     __tablename__ = "usuario"
 
@@ -30,10 +32,7 @@ class Usuario(Base):
     correo = Column(String(255), nullable=False, unique=True)
     contraseña = Column(String(255), nullable=False)
     dni = Column(Integer, unique=True)
-    tipo = Column(Integer, ForeignKey('rol_usuario.id'))  # Relación con rol_usuario
+    tipo = Column(Integer, ForeignKey("rol_usuario.id"))  # Relación con rol_usuario
 
     # Relación con RolUsuario
     tipo_rol = relationship("RolUsuario", back_populates="usuarios")
-
-
-

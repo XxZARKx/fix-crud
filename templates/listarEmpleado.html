@@ -3,8 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-		<title>Actualizar Usuario</title>
+		<title>Lista de Usuarios</title>
 		<link
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
@@ -16,15 +15,34 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
 		<link rel="stylesheet" href="/static/styles.css" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	</head>
 	<body>
-		<h1>CRUD disponibles</h1>
-		<ul class="listaEnlaces">
-			<li><a href="/usuarios/register">Crud usuarios</a></li>
-			<li><a href="/vehiculos/register">Crud vehiculos</a></li>
-			<li><a href="/empleados/register">Crud Empleados</a></li>
-		</ul>
-		<script type="module" src="../static/updateUsuario.js"></script>
-		<script src="/static/tooglePasswordVisibility.js"></script>
+		<header>
+			<nav>
+				<ul>
+					<li><a href="/empleados/register">Registrar Empleado</a></li>
+					<li><a href="/empleados/list">Lista de Empleados</a></li>
+					<li><a href="/enlaces">CRUD disponibles</a></li>
+				</ul>
+			</nav>
+		</header>
+		<main>
+			<h1>Empleados Registrados</h1>
+			<table id="employeesTable">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Nombres y Apellidos</th>
+						<th>Correo</th>
+						<th>DNI</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</main>
+
+		<script type="module" src="../static/getYDeleteEmpleado.js"></script>
 	</body>
 </html>

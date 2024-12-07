@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<title>Actualizar Usuario</title>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
+			integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+		<link rel="stylesheet" href="/static/styles.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+	</head>
+	<body>
+		<header>
+			<nav>
+				<ul>
+					<li><a href="/empleados/register">Registrar Empleado</a></li>
+					<li><a href="/empleados/list">Lista de Empleados</a></li>
+					<li><a href="/enlaces">CRUD disponibles</a></li>
+				</ul>
+			</nav>
+		</header>
+		<h1>Actualizar Empleado</h1>
+		<form id="updateEmployeeForm">
+			<input type="hidden" id="employeeId" />
+
+			<label for="nombre">Nombres y Apellidos:</label>
+			<input type="text" id="nombre" name="nombre" required /><br />
+
+			<label for="correo">Correo:</label>
+			<input type="email" id="correo" name="correo" required /><br />
+
+			<div class="passwordContainer">
+				<label for="contraseña">Contraseña:</label>
+				<input type="password" id="contraseña" name="contraseña" required />
+				<i id="toggle-password" class="fas fa-eye toggle-icon"></i>
+			</div>
+
+			<button type="submit">Actualizar</button>
+		</form>
+
+		<script type="module" src="../static/updateEmpleado.js"></script>
+		<script src="/static/tooglePasswordVisibility.js"></script>
+	</body>
+</html>
