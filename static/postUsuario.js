@@ -8,24 +8,24 @@ export function getApiUrl() {
 
 const path = window.location.pathname;
 let tipo = 2; // Por defecto es tipo usuario
-if (path.includes(`/empleados`)) {
+if (path.includes(`/employees`)) {
 	tipo = 1; // Empleado
 	document.getElementById("formTitle").innerText = "Registrar Empleado";
 	let navList = document.querySelector("#headerRegister nav ul");
 	const listEmpleados = document.createElement("li");
 	const registerEmpleados = document.createElement("li");
-	listEmpleados.innerHTML = `<a href="/empleados/list">Lista de Empleados</a>`;
-	registerEmpleados.innerHTML = `<a href="/empleados/register">Registrar Empleado</a>`;
+	listEmpleados.innerHTML = `<a href="/employees/list">Lista de Empleados</a>`;
+	registerEmpleados.innerHTML = `<a href="/employees/register">Registrar Empleado</a>`;
 	navList.appendChild(listEmpleados);
 	navList.appendChild(registerEmpleados);
-} else if (path.includes(`/clientes`)) {
+} else if (path.includes(`/clients`)) {
 	tipo = 2; // Usuario
 	document.getElementById("formTitle").innerText = "Registrar Cliente";
 	let navList = document.querySelector("#headerRegister nav ul");
 	const listClientes = document.createElement("li");
 	const registerClientes = document.createElement("li");
-	listClientes.innerHTML = `<a href="/clientes/list">Lista de Clientes</a>`;
-	registerClientes.innerHTML = `<a href="/clientes/register">Registrar Clientes</a>`;
+	listClientes.innerHTML = `<a href="/clients/list">Lista de Clientes</a>`;
+	registerClientes.innerHTML = `<a href="/clients/register">Registrar Clientes</a>`;
 	navList.appendChild(listClientes);
 	navList.appendChild(registerClientes);
 }
@@ -41,7 +41,7 @@ document
 		userData.tipo = tipo;
 
 		try {
-			const response = await fetch(`${getApiUrl()}/usuarios/`, {
+			const response = await fetch(`${getApiUrl()}/users/`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(userData),

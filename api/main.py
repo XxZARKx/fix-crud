@@ -1,242 +1,71 @@
-from fastapi import FastAPI, Form, Request, Depends, HTTPException
-from sqlalchemy.orm import Session
-import models, schemas
-from database import (
-    engine,
-    SessionLocal,
-)
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-
-# Crear las tablas en la base de datos
-models.Base.metadata.create_all(bind=engine)
+from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
+from .routers import vehicles, users, employees, clients
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
+templates = Jinja2Templates(directory="templates")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir solicitudes desde cualquier origen
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir cualquier método (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # Permitir cualquier encabezado
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
-# Dependencia para obtener la sesión de la base de datos
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
-# Redirección inicial a la página de registro
+# Redirección inicial
 @app.get("/", include_in_schema=False)
 async def home():
     return RedirectResponse("/enlaces")
-
 
 @app.get("/enlaces", response_class=HTMLResponse)
 async def get_form(request: Request):
     return templates.TemplateResponse("listaEnlaces.html", {"request": request})
 
-
-@app.get("/vehiculos/register", response_class=HTMLResponse)
+# Vehículos
+@app.get("/vehicles/register", response_class=HTMLResponse)
 async def get_form(request: Request):
-    return templates.TemplateResponse("/vehiculos/registrarVehiculo.html", {"request": request})
+    return templates.TemplateResponse("vehiculos/registrarVehiculo.html", {"request": request})
 
-
-@app.get("/vehiculos/list", response_class=HTMLResponse)
+@app.get("/vehicles/list", response_class=HTMLResponse)
 async def get_lista_vehiculos(request: Request):
-    return templates.TemplateResponse("/vehiculos/listarVehiculos.html", {"request": request})
+    return templates.TemplateResponse("vehiculos/listarVehiculos.html", {"request": request})
 
-
-@app.get("/vehiculos/update", response_class=HTMLResponse)
+@app.get("/vehicles/update", response_class=HTMLResponse)
 async def get_update_vehiculo(request: Request):
-    return templates.TemplateResponse("/vehiculos/updateVehiculo.html", {"request": request})
+    return templates.TemplateResponse("vehiculos/updateVehiculo.html", {"request": request})
 
-
-""" clientes """
-
-
-@app.get("/clientes/register", response_class=HTMLResponse)
+# Clientes
+@app.get("/clients/register", response_class=HTMLResponse)
 async def get_register_usuario(request: Request):
     return templates.TemplateResponse("usuarios/registrarUsuario.html", {"request": request})
 
-
-@app.get("/clientes/list", response_class=HTMLResponse)
+@app.get("/clients/list", response_class=HTMLResponse)
 async def get_listar_usuarios(request: Request):
     return templates.TemplateResponse("usuarios/listarUsuarios.html", {"request": request})
 
-
-@app.get("/usuarios/update", response_class=HTMLResponse)
+@app.get("/users/update", response_class=HTMLResponse)
 async def get_update_usuario(request: Request):
     return templates.TemplateResponse("usuarios/updateUsuario.html", {"request": request})
 
-
-""" empleados """
-
-
-# # Crear las rutas para empleados en main.py
-@app.get("/empleados/register", response_class=HTMLResponse)
+# Empleados
+@app.get("/employees/register", response_class=HTMLResponse)
 async def get_register_empleado(request: Request):
     return templates.TemplateResponse("usuarios/registrarUsuario.html", {"request": request})
 
-
-@app.get("/empleados/list", response_class=HTMLResponse)
+@app.get("/employees/list", response_class=HTMLResponse)
 async def get_listar_empleados(request: Request):
     return templates.TemplateResponse("usuarios/listarUsuarios.html", {"request": request})
 
-
-
-# Crear un nuevo vehículo
-@app.post("/vehicles/", response_model=schemas.Vehicle)
-def create_vehicle(vehicle: schemas.VehicleCreate, db: Session = Depends(get_db)):
-    db_vehicle = models.Vehiculo(**vehicle.model_dump())
-    db.add(db_vehicle)
-    db.commit()
-    db.refresh(db_vehicle)
-    return db_vehicle
-
-
-# Obtener todos los vehículos
-@app.get("/vehicles/", response_model=list[schemas.Vehicle])
-def read_vehicles(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(models.Vehiculo).offset(skip).limit(limit).all()
-
-
-# Obtener un vehículo por ID
-@app.get("/vehicles/{vehicle_id}", response_model=schemas.Vehicle)
-def read_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
-    db_vehicle = (
-        db.query(models.Vehiculo).filter(models.Vehiculo.id == vehicle_id).first()
-    )
-    if not db_vehicle:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
-    return db_vehicle
-
-
-# Actualizar un vehículo
-@app.put("/vehicles/{vehicle_id}", response_model=schemas.Vehicle)
-def update_vehicle(
-    vehicle_id: int, vehicle: schemas.VehicleCreate, db: Session = Depends(get_db)
-):
-    db_vehicle = (
-        db.query(models.Vehiculo).filter(models.Vehiculo.id == vehicle_id).first()
-    )
-    if not db_vehicle:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
-
-    # Cambio a model_dump()
-    vehicle_data = vehicle.model_dump()
-    for key, value in vehicle_data.items():
-        setattr(db_vehicle, key, value)
-
-    db.commit()
-    db.refresh(db_vehicle)
-    return db_vehicle
-
-
-# Eliminar un vehículo
-@app.delete("/vehicles/{vehicle_id}")
-def delete_vehicle(vehicle_id: int, db: Session = Depends(get_db)):
-    db_vehicle = (
-        db.query(models.Vehiculo).filter(models.Vehiculo.id == vehicle_id).first()
-    )
-    if not db_vehicle:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
-    db.delete(db_vehicle)
-    db.commit()
-    return {"message": "Vehicle deleted successfully"}
-
-
-""" CRUD USUARIO """
-
-
-# Crear un nuevo usuario
-@app.post("/usuarios/", response_model=schemas.Usuario)
-def create_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)):
-    db_usuario = models.Usuario(**usuario.model_dump())
-    db.add(db_usuario)
-    db.commit()
-    db.refresh(db_usuario)
-    return db_usuario
-
-
-# Obtener todos los usuarios con tipo = 2
-@app.get("/clientes/", response_model=list[schemas.Usuario])
-def read_usuarios(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    """
-    Obtiene una lista de usuarios con tipo = 2, con paginación (skip, limit).
-    """
-    return (
-        db.query(models.Usuario)
-        .filter(models.Usuario.tipo == 2)
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
-
-@app.get("/empleados/", response_model=list[schemas.Usuario])
-def read_usuarios(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    """
-    Obtiene una lista de usuarios con tipo = 2, con paginación (skip, limit).
-    """
-    return (
-        db.query(models.Usuario)
-        .filter(models.Usuario.tipo == 1)
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
-
-
-# Obtener un usuario por ID
-@app.get("/usuarios/{usuario_id}", response_model=schemas.Usuario)
-def read_usuario(usuario_id: int, db: Session = Depends(get_db)):
-    db_usuario = (
-        db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
-    )
-    if not db_usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    return db_usuario
-
-
-# Actualizar un usuario
-@app.put("/usuarios/{usuario_id}", response_model=schemas.Usuario)
-def update_usuario(
-    usuario_id: int, usuario: schemas.UsuarioUpdate, db: Session = Depends(get_db)
-):
-    db_usuario = (
-        db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
-    )
-    if not db_usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    # Actualizar solo los campos proporcionados
-    for key, value in usuario.model_dump(exclude_unset=True).items():
-        setattr(db_usuario, key, value)
-
-    db.commit()
-    db.refresh(db_usuario)
-    return db_usuario
-
-
-# Eliminar un usuario
-@app.delete("/usuarios/{usuario_id}")
-def delete_usuario(usuario_id: int, db: Session = Depends(get_db)):
-    db_usuario = (
-        db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
-    )
-    if not db_usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    db.delete(db_usuario)
-    db.commit()
-    return {"message": "Usuario eliminado exitosamente"}
+# Incluir las rutas de los módulos
+app.include_router(vehicles.router, prefix="/vehicles", tags=["Vehicles"])
+app.include_router(users.router, prefix="/users", tags=["Usuarios"])
+app.include_router(employees.router, prefix="/employees", tags=["Empleados"])
+app.include_router(clients.router, prefix="/clients", tags=["Clientes"])

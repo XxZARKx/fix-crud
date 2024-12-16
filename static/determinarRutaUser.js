@@ -1,6 +1,6 @@
-const endpoint = window.location.pathname.includes("empleados")
-	? "/empleados/list"
-	: "/clientes/list";
+const endpoint = window.location.pathname.includes("clients")
+	? "/employees/list"
+	: "/clients/list";
 
 fetch(endpoint)
 	.then((response) => response.json())
@@ -14,7 +14,7 @@ fetch(endpoint)
           <td>${usuario.correo}</td>
           <td>${usuario.dni}</td>
           <td>
-            <a href="/usuarios/update/${usuario.id}" class="btn">Editar</a>
+            <a href="/users/update/${usuario.id}" class="btn">Editar</a>
             <button class="btn red" onclick="deleteUser(${usuario.id})">Eliminar</button>
           </td>
         `;
@@ -23,7 +23,7 @@ fetch(endpoint)
 	});
 
 function deleteUser(id) {
-	fetch(`/usuarios/${id}`, { method: "DELETE" })
+	fetch(`/users/${id}`, { method: "DELETE" })
 		.then(() => location.reload())
 		.catch((err) => console.error(err));
 }
